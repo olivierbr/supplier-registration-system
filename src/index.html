@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Registration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Supplier Registration Portal</h1>
+            <p>Register your company as our supplier</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-title">Company Info</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-title">VAT Details</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-title">Bank Info</div>
+            </div>
+        </div>
+
+        <form id="supplierForm">
+            <!-- Step 1: Company Information -->
+            <div class="form-step active" id="step1">
+                <h2>Company Information</h2>
+                <div class="form-group">
+                    <label for="companyName">Company Name *</label>
+                    <input type="text" id="companyName" name="companyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactPerson">Contact Person</label>
+                    <input type="text" id="contactPerson" name="contactPerson">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city">
+                    </div>
+                    <div class="form-group">
+                        <label for="postalCode">Postal Code</label>
+                        <input type="text" id="postalCode" name="postalCode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <select id="country" name="country">
+                        <option value="">Select Country</option>
+                        <option value="Belgium">Belgium</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="France">France</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Luxembourg">Luxembourg</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 2: VAT Information -->
+            <div class="form-step" id="step2">
+                <h2>VAT Information</h2>
+                <div class="form-group">
+                    <label for="vatNumber">VAT Number *</label>
+                    <input type="text" id="vatNumber" name="vatNumber" placeholder="BE0123456789" required>
+                    <button type="button" class="btn btn-secondary" onclick="validateVAT()">Validate VAT</button>
+                </div>
+                <div id="vatValidation" class="validation-result"></div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Bank Information -->
+            <div class="form-step" id="step3">
+                <h2>Bank Information</h2>
+                <div class="form-group">
+                    <label for="iban">IBAN *</label>
+                    <input type="text" id="iban" name="iban" placeholder="BE68 5390 0754 7034" required>
+                </div>
+                <div class="form-group">
+                    <label for="bic">BIC/SWIFT Code</label>
+                    <input type="text" id="bic" name="bic" placeholder="GKCCBEBB">
+                </div>
+                <div class="form-group">
+                    <label for="bankName">Bank Name</label>
+                    <input type="text" id="bankName" name="bankName">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
+                    <button type="submit" class="btn btn-success">Submit Registration</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Processing your registration...</p>
+        </div>
+
+        <div id="success" class="success-message hidden">
+            <h2>Registration Successful!</h2>
+            <p>Thank you for registering. We will review your information and contact you soon.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

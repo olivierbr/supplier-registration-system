@@ -1,0 +1,12 @@
+{
+  "name": "supplier-registration-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for supplier registration",
+  "main": "index.js",
+  "dependencies": {
+    "mssql": "^9.1.1"
+  },
+  "devDependencies": {
+    "@azure/functions": "^3.0.0"
+  }
+}
