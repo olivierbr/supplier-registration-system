@@ -4,7 +4,13 @@
   "description": "Azure Functions API for supplier registration",
   "main": "index.js",
   "dependencies": {
-    "mssql": "^9.1.1"
+    "mssql": "^9.1.1",
+    "validator": "^13.11.0",
+    "dompurify": "^3.0.5",
+    "jsdom": "^22.1.0",
+    "express-rate-limit": "^6.10.0",
+    "memory-cache": "^0.2.0",
+    "@azure/communication-email": "^1.0.0"
   },
   "devDependencies": {
     "@azure/functions": "^3.0.0"
