@@ -10,7 +10,9 @@
     "jsdom": "^22.1.0",
     "express-rate-limit": "^6.10.0",
     "memory-cache": "^0.2.0",
-    "@azure/communication-email": "^1.0.0"
+    "@azure/communication-email": "^1.0.0",
+    "@azure/keyvault-secrets": "^4.7.0",
+    "@azure/identity": "^3.4.0"
   },
   "devDependencies": {
     "@azure/functions": "^3.0.0"

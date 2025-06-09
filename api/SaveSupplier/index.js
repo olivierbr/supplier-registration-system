@@ -4,6 +4,7 @@ const { JSDOM } = require('jsdom');
 const createDOMPurify = require('dompurify');
 const cache = require('memory-cache');
 const { EmailClient } = require('@azure/communication-email');
+const keyVault = require('../shared/keyVault');
 
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
@@ -19,8 +20,50 @@ const config = {
     }
 };
 
+// Initialize configuration with Key Vault
+async function getConfig() {
+    try {
+        const secrets = await keyVault.getAllSecrets();
+        
+        return {
+            user: process.env.SQL_USER,
+            password: secrets.sqlPassword,
+            server: process.env.SQL_SERVER,
+            database: process.env.SQL_DATABASE,
+            options: {
+                encrypt: true,
+                trustServerCertificate: false
+            }
+        };
+    } catch (error) {
+        console.error('Error getting configuration:', error);
+        // Fallback to environment variables
+        return {
+            user: process.env.SQL_USER,
+            password: process.env.SQL_PASSWORD,
+            server: process.env.SQL_SERVER,
+            database: process.env.SQL_DATABASE,
+            options: {
+                encrypt: true,
+                trustServerCertificate: false
+            }
+        };
+    }
+}
+
+// Initialize Email Client with Key Vault
+async function getEmailClient() {
+    try {
+        const connectionString = await keyVault.getSecret('communication-connection-string');
+        return new EmailClient(connectionString);
+    } catch (error) {
+        console.error('Error initializing email client:', error);
+        return new EmailClient(process.env.COMMUNICATION_SERVICES_CONNECTION_STRING);
+    }
+}
+
 // Initialize Email Client
-const emailClient = new EmailClient(process.env.COMMUNICATION_SERVICES_CONNECTION_STRING);
+//const emailClient = new EmailClient(process.env.COMMUNICATION_SERVICES_CONNECTION_STRING);
 
 // Rate limiting function
 function checkRateLimit(clientId) {
@@ -408,6 +451,10 @@ module.exports = async function (context, req) {
     }
 
     try {
+         // Get configuration from Key Vault
+        const config = await getConfig();
+        const emailClient = await getEmailClient();
+        
         // Rate limiting
         const clientId = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
         if (!checkRateLimit(clientId)) {
