@@ -81,7 +81,6 @@ function validateAndSanitizeInput(data) {
     // Phone - optional but validate format if provided
     if (data.phone && data.phone.trim()) {
         const phone = data.phone.trim();
-        // Allow international phone formats
         if (!validator.isMobilePhone(phone, 'any', { strictMode: false })) {
             errors.push('Invalid phone number format');
         } else {
@@ -108,7 +107,6 @@ function validateAndSanitizeInput(data) {
     // Postal Code - optional but validate format if provided
     if (data.postalCode && data.postalCode.trim()) {
         const postalCode = data.postalCode.trim();
-        // Basic postal code validation (alphanumeric, spaces, hyphens)
         if (!/^[A-Za-z0-9\s\-]{2,20}$/.test(postalCode)) {
             errors.push('Invalid postal code format');
         } else {
@@ -129,7 +127,6 @@ function validateAndSanitizeInput(data) {
     // VAT Number - optional but validate format if provided
     if (data.vatNumber && data.vatNumber.trim()) {
         const vatNumber = data.vatNumber.trim().replace(/\s/g, '').toUpperCase();
-        // EU VAT number patterns
         const vatPatterns = {
             'BE': /^BE[0-9]{10}$/,
             'NL': /^NL[0-9]{9}B[0-9]{2}$/,
@@ -505,135 +502,6 @@ module.exports = async function (context, req) {
                 emailStatus: {
                     confirmationSent: emailResults.confirmation.success,
                     notificationSent: emailResults.notification.success
-                }
-            }
-        };
-
-    } catch (error) {
-        context.log.error('Error saving supplier:', error);
-        context.res = {
-            status: 500,
-            body: { error: "Internal server error" }
-        };
-    } finally {
-        await sql.close();
-    }
-};
-```ic = bic;
-        }
-    }
-
-    // Bank Name - optional
-    if (data.bankName && data.bankName.trim()) {
-        sanitized.bankName = DOMPurify.sanitize(data.bankName.trim());
-        if (sanitized.bankName.length > 255) {
-            errors.push('Bank name must be less than 255 characters');
-        }
-    }
-
-    return { errors, sanitized };
-}
-
-// CORS headers
-function setCorsHeaders(context) {
-    context.res.headers = {
-        'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGINS || '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Max-Age': '86400',
-        'Content-Type': 'application/json'
-    };
-}
-
-module.exports = async function (context, req) {
-    context.log('SaveSupplier function processed a request.');
-
-    // Set CORS headers
-    setCorsHeaders(context);
-
-    // Handle preflight request
-    if (req.method === 'OPTIONS') {
-        context.res = {
-            status: 200,
-            body: ''
-        };
-        return;
-    }
-
-    try {
-        // Rate limiting
-        const clientId = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
-        if (!checkRateLimit(clientId)) {
-            context.res = {
-                status: 429,
-                body: { error: "Rate limit exceeded. Please try again later." }
-            };
-            return;
-        }
-
-        // Validate and sanitize input
-        const { errors, sanitized } = validateAndSanitizeInput(req.body || {});
-        
-        if (errors.length > 0) {
-            context.res = {
-                status: 400,
-                body: { error: "Validation failed", details: errors }
-            };
-            return;
-        }
-
-        // Connect to database
-        await sql.connect(config);
-
-        const request = new sql.Request();
-        
-        // Check if supplier already exists
-        const existingSupplier = await request
-            .input('email', sql.NVarChar, sanitized.email)
-            .query('SELECT Id FROM Suppliers WHERE Email = @email');
-
-        if (existingSupplier.recordset.length > 0) {
-            context.res = {
-                status: 409,
-                body: { error: "A supplier with this email already exists" }
-            };
-            return;
-        }
-
-        // Insert supplier data
-        const insertRequest = new sql.Request();
-        const query = `
-            INSERT INTO Suppliers (
-                CompanyName, ContactPerson, Email, Phone, Address, 
-                City, PostalCode, Country, VATNumber, IBAN, BIC, BankName
-            ) VALUES (
-                @companyName, @contactPerson, @email, @phone, @address,
-                @city, @postalCode, @country, @vatNumber, @iban, @bic, @bankName
-            )
-        `;
-
-        insertRequest.input('companyName', sql.NVarChar, sanitized.companyName);
-        insertRequest.input('contactPerson', sql.NVarChar, sanitized.contactPerson || null);
-        insertRequest.input('email', sql.NVarChar, sanitized.email);
-        insertRequest.input('phone', sql.NVarChar, sanitized.phone || null);
-        insertRequest.input('address', sql.NVarChar, sanitized.address || null);
-        insertRequest.input('city', sql.NVarChar, sanitized.city || null);
-        insertRequest.input('postalCode', sql.NVarChar, sanitized.postalCode || null);
-        insertRequest.input('country', sql.NVarChar, sanitized.country || null);
-        insertRequest.input('vatNumber', sql.NVarChar, sanitized.vatNumber || null);
-        insertRequest.input('iban', sql.NVarChar, sanitized.iban);
-        insertRequest.input('bic', sql.NVarChar, sanitized.bic || null);
-        insertRequest.input('bankName', sql.NVarChar, sanitized.bankName || null);
-
-        await insertRequest.query(query);
-
-        context.res = {
-            status: 200,
-            body: { 
-                message: "Supplier registered successfully",
-                data: {
-                    companyName: sanitized.companyName,
-                    email: sanitized.email
                 }
             }
         };
