@@ -86,34 +86,129 @@ async function validateVAT() {
 document.getElementById('supplierForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+ console.log('=== FORM SUBMISSION STARTED ===');
+
     // Get form data
+    // Collect all form data
     const formData = {
-        companyName: document.getElementById('companyName').value,
-        contactPerson: document.getElementById('contactPerson').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        businessType: document.getElementById('businessType').value,
-        description: document.getElementById('description').value
+        // Step 1: Company Information
+        companyName: document.getElementById('companyName').value.trim(),
+        contactPerson: document.getElementById('contactPerson').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        postalCode: document.getElementById('postalCode').value.trim(),
+        country: document.getElementById('country').value,
+        
+        // Step 2: VAT Information
+        vatNumber: document.getElementById('vatNumber').value.trim(),
+        
+        // Step 3: Bank Information
+        iban: document.getElementById('iban').value.trim(),
+        bic: document.getElementById('bic').value.trim(),
+        bankName: document.getElementById('bankName').value.trim()
     };
     
+ console.log('Form data collected:', formData);
+// Show loading state
+    const submitButton = document.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Submitting...';
+    submitButton.disabled = true;
+
+
+
     try {
-        const result = await registerSupplier(formData);
+        console.log('Sending request to /api/RegisterSupplier');
+        const response = await fetch('/api/RegisterSupplier', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
         
-        // Success handling
-        document.getElementById('successMessage').style.display = 'block';
-        document.getElementById('successMessage').innerHTML = 
-            `Registration successful! Your supplier ID is: ${result.supplierId}`;
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
         
-        // Reset form
-        this.reset();
+        // Get response text first
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+        
+        let responseData;
+        try {
+            responseData = JSON.parse(responseText);
+            console.log('Parsed response:', responseData);
+        } catch (parseError) {
+            console.error('Failed to parse JSON:', parseError);
+            throw new Error(`Server returned invalid response: ${responseText}`);
+        }
+        
+        if (!response.ok) {
+            console.error('HTTP Error:', response.status, responseData);
+            throw new Error(responseData.error || `HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        if (!responseData.success) {
+            console.error('Business logic error:', responseData);
+            throw new Error(responseData.error || 'Registration failed');
+        }
+        
+        console.log('=== REGISTRATION SUCCESSFUL ===');
+        
+        // Show success message
+        const successHtml = `
+            <div class="success-message">
+                <h2>Registration Successful!</h2>
+                <p>Thank you for registering as a supplier.</p>
+                <p><strong>Supplier ID:</strong> ${responseData.supplierId}</p>
+                <p><strong>Company:</strong> ${responseData.companyName}</p>
+                <p><strong>Status:</strong> ${responseData.status}</p>
+                <p>You will receive an email confirmation shortly. Our team will review your application and contact you within 2-3 business days.</p>
+            </div>
+        `;
+        
+        // Replace form with success message
+        document.getElementById('supplierForm').innerHTML = successHtml;
         
     } catch (error) {
-        // Error handling
-        document.getElementById('errorMessage').style.display = 'block';
-        document.getElementById('errorMessage').innerHTML = error.message;
+        console.error('=== REGISTRATION FAILED ===');
+        console.error('Error:', error);
+        
+        // Show error message
+        alert(`Registration failed: ${error.message}`);
+        
+        // You could also show a more user-friendly error div
+        let errorDiv = document.getElementById('errorMessage');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'errorMessage';
+            errorDiv.className = 'error-message';
+            document.getElementById('supplierForm').insertBefore(errorDiv, document.getElementById('supplierForm').firstChild);
+        }
+        errorDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+        errorDiv.style.display = 'block';
+        
+    } finally {
+        // Reset button
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
     }
 });
 
+// Test the API connection when page loads
+window.addEventListener('load', async function() {
+    try {
+        console.log('Testing API connection...');
+        const response = await fetch('/api/TestConnection');
+        const data = await response.json();
+        console.log('API test result:', data);
+    } catch (error) {
+        console.error('API test failed:', error);
+    }
+});
 
 /*
 document.getElementById('supplierForm').addEventListener('submit', async function(e) {
