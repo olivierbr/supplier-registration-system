@@ -80,6 +80,42 @@ async function validateVAT() {
     }
 }
 
+
+
+// Example usage in your form submit handler
+document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Get form data
+    const formData = {
+        companyName: document.getElementById('companyName').value,
+        contactPerson: document.getElementById('contactPerson').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        businessType: document.getElementById('businessType').value,
+        description: document.getElementById('description').value
+    };
+    
+    try {
+        const result = await registerSupplier(formData);
+        
+        // Success handling
+        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('successMessage').innerHTML = 
+            `Registration successful! Your supplier ID is: ${result.supplierId}`;
+        
+        // Reset form
+        this.reset();
+        
+    } catch (error) {
+        // Error handling
+        document.getElementById('errorMessage').style.display = 'block';
+        document.getElementById('errorMessage').innerHTML = error.message;
+    }
+});
+
+
+
 document.getElementById('supplierForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
