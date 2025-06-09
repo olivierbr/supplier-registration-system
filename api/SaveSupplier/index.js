@@ -424,6 +424,65 @@ async function sendNotificationEmail(supplierData) {
     }
 }
 
+// debug purpose only
+async function saveSupplier(formData) {
+    console.log('=== REGISTRATION STARTED ===');
+    console.log('Form data:', formData);
+    
+    try {
+        const apiUrl = '/api/SaveSupplier'; // or your full URL
+        console.log('Calling API:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        // Get response text first (in case it's not valid JSON)
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+        
+        let responseData;
+        try {
+            responseData = JSON.parse(responseText);
+            console.log('Parsed response:', responseData);
+        } catch (parseError) {
+            console.error('Failed to parse response as JSON:', parseError);
+            throw new Error(`Server returned invalid JSON: ${responseText}`);
+        }
+        
+        if (!response.ok) {
+            console.error('HTTP Error:', response.status, responseData);
+            throw new Error(responseData.error || `HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        if (!responseData.success) {
+            console.error('Business logic error:', responseData);
+            throw new Error(responseData.error || 'Registration failed');
+        }
+        
+        console.log('=== REGISTRATION SUCCESSFUL ===');
+        return responseData;
+        
+    } catch (error) {
+        console.error('=== REGISTRATION FAILED ===');
+        console.error('Error type:', error.constructor.name);
+        console.error('Error message:', error.message);
+        console.error('Full error:', error);
+        
+        // Show user-friendly error
+        alert(`Registration failed: ${error.message}`);
+        throw error;
+    }
+}
+
 // CORS headers
 function setCorsHeaders(context) {
     context.res.headers = {
@@ -436,7 +495,11 @@ function setCorsHeaders(context) {
 }
 
 module.exports = async function (context, req) {
+   
+    context.log('=== SUPPLIER REGISTRATION STARTED ===');
     context.log('SaveSupplier function processed a request.');
+    context.log('Method:', req.method);
+    context.log('Request body:', JSON.stringify(req.body, null, 2));
 
     // Set CORS headers
     setCorsHeaders(context);
@@ -451,6 +514,141 @@ module.exports = async function (context, req) {
     }
 
     try {
+
+
+// Validate request method
+        if (req.method !== 'POST') {
+            context.log('ERROR: Invalid method:', req.method);
+            context.res = {
+                status: 405,
+                body: { success: false, error: "Method not allowed" }
+            };
+            return;
+        }
+
+        // Validate request body
+        if (!req.body) {
+            context.log('ERROR: No request body');
+            context.res = {
+                status: 400,
+                body: { success: false, error: "Request body is required" }
+            };
+            return;
+        }
+
+        // Extract all form fields
+        const {
+            // Step 1: Company Information
+            companyName,
+            contactPerson,
+            email,
+            phone,
+            address,
+            city,
+            postalCode,
+            country,
+            
+            // Step 2: VAT Information
+            vatNumber,
+            
+            // Step 3: Bank Information
+            iban,
+            bic,
+            bankName
+        } = req.body;
+        
+        context.log('Extracted form data:', {
+            companyName, contactPerson, email, phone,
+            address, city, postalCode, country,
+            vatNumber, iban, bic, bankName
+        });
+
+        // Validate required fields based on your form
+        const requiredFields = {
+            companyName,
+            email,
+            vatNumber,
+            iban
+        };
+
+        const missingFields = Object.keys(requiredFields).filter(field => 
+            !requiredFields[field] || requiredFields[field].trim() === ''
+        );
+
+        if (missingFields.length > 0) {
+            context.log('ERROR: Missing required fields:', missingFields);
+            context.res = {
+                status: 400,
+                body: { 
+                    success: false, 
+                    error: `Missing required fields: ${missingFields.join(', ')}` 
+                }
+            };
+            return;
+        }
+
+
+
+        // Get database configuration
+        context.log('Getting database configuration...');
+        const dbConfig = {
+            user: process.env.SQL_USER,
+            password: process.env.SQL_PASSWORD,
+            server: process.env.SQL_SERVER,
+            database: process.env.SQL_DATABASE,
+            options: {
+                encrypt: true,
+                trustServerCertificate: false
+            }
+        };
+
+        // Check database config
+        const missingConfig = [];
+        if (!dbConfig.user) missingConfig.push('SQL_USER');
+        if (!dbConfig.password) missingConfig.push('SQL_PASSWORD');
+        if (!dbConfig.server) missingConfig.push('SQL_SERVER');
+        if (!dbConfig.database) missingConfig.push('SQL_DATABASE');
+
+        if (missingConfig.length > 0) {
+            context.log('ERROR: Missing database configuration:', missingConfig);
+            context.res = {
+                status: 500,
+                body: { 
+                    success: false, 
+                    error: "Database configuration error",
+                    details: `Missing: ${missingConfig.join(', ')}`
+                }
+            };
+            return;
+        }
+
+        // Generate supplier ID
+        const supplierId = `SUP-${Date.now()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+        context.log('Generated supplier ID:', supplierId);
+
+        // Connect to database
+        context.log('Connecting to database...');
+        let pool;
+        try {
+            pool = await sql.connect(dbConfig);
+            context.log('✅ Database connection successful');
+        } catch (dbError) {
+            context.log('ERROR: Database connection failed:', dbError.message);
+            context.res = {
+                status: 500,
+                body: { 
+                    success: false, 
+                    error: "Database connection failed",
+                    details: dbError.message
+                }
+            };
+            return;
+        }
+
+
+
+
+
          // Get configuration from Key Vault
         const config = await getConfig();
         const emailClient = await getEmailClient();
@@ -555,6 +753,11 @@ module.exports = async function (context, req) {
 
     } catch (error) {
         context.log.error('Error saving supplier:', error);
+        context.log('=== CRITICAL ERROR ===');
+        context.log('Error name:', error.name);
+        context.log('Error message:', error.message);
+        context.log('Error stack:', error.stack);
+        
         context.res = {
             status: 500,
             body: { error: "Internal server error" }
