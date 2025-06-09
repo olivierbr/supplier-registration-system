@@ -83,7 +83,7 @@ async function validateVAT() {
 
 
 // Example usage in your form submit handler
-document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+document.getElementById('supplierForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     // Get form data
@@ -115,7 +115,7 @@ document.getElementById('registrationForm').addEventListener('submit', async fun
 });
 
 
-
+/*
 document.getElementById('supplierForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -152,6 +152,7 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
         alert('Registration failed. Please try again.');
     }
 });
+*/
 
 // Initialize form
 document.addEventListener('DOMContentLoaded', function() {
