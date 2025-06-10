@@ -27,7 +27,7 @@ async function getConfig() {
         
         return {
             user: process.env.SQL_USER,
-            password: secrets.sqlPassword,
+            password: secrets.sql-password,
             server: process.env.SQL_SERVER,
             database: process.env.SQL_DATABASE,
             options: {
