@@ -35,6 +35,9 @@ async function getConfig() {
                 trustServerCertificate: false
             }
         };
+
+alert('Configuration loaded from Key Vault');
+
     } catch (error) {
         console.error('Error getting configuration:', error);
         // Fallback to environment variables
