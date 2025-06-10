@@ -120,8 +120,8 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
 
 
     try {
-        console.log('Sending request to /api/RegisterSupplier');
-        const response = await fetch('/api/RegisterSupplier', {
+        console.log('Sending request to /api/SaveSupplier');
+        const response = await fetch('/api/SaveSupplier', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
