@@ -25,6 +25,8 @@ async function getConfig() {
     try {
         const secrets = await keyVault.getAllSecrets();
         
+        console.error('----------  PASSWORD from Key Vault: ', secrets.sqlPassword)
+        
         return {
             user: process.env.SQL_USER,
             password: secrets.sqlPassword,
@@ -36,7 +38,7 @@ async function getConfig() {
             }
         };
 
-console.error('----------  PASSWORD from Key Vault: ', secrets.sqlPassword)
+
 
 
 
@@ -521,7 +523,7 @@ module.exports = async function (context, req) {
     try {
 
 
-// Validate request method
+        // Validate request method
         if (req.method !== 'POST') {
             context.log('ERROR: Invalid method:', req.method);
             context.res = {
@@ -594,64 +596,6 @@ module.exports = async function (context, req) {
 
 
 
-        // Get database configuration
-        context.log('Getting database configuration...');
-        const dbConfig = {
-            user: process.env.SQL_USER,
-            password: process.env.SQL_PASSWORD,
-            server: process.env.SQL_SERVER,
-            database: process.env.SQL_DATABASE,
-            options: {
-                encrypt: true,
-                trustServerCertificate: false
-            }
-        };
-
-        // Check database config
-        const missingConfig = [];
-        if (!dbConfig.user) missingConfig.push('SQL_USER');
-        if (!dbConfig.password) missingConfig.push('SQL_PASSWORD');
-        if (!dbConfig.server) missingConfig.push('SQL_SERVER');
-        if (!dbConfig.database) missingConfig.push('SQL_DATABASE');
-
-        if (missingConfig.length > 0) {
-            context.log('ERROR: Missing database configuration:', missingConfig);
-            context.res = {
-                status: 500,
-                body: { 
-                    success: false, 
-                    error: "Database configuration error",
-                    details: `Missing: ${missingConfig.join(', ')}`
-                }
-            };
-            return;
-        }
-
-        // Generate supplier ID
-        const supplierId = `SUP-${Date.now()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
-        context.log('Generated supplier ID:', supplierId);
-
-        // Connect to database
-        context.log('Connecting to database...');
-        let pool;
-        try {
-            pool = await sql.connect(dbConfig);
-            context.log('✅ Database connection successful');
-        } catch (dbError) {
-            context.log('ERROR: Database connection failed:', dbError.message);
-            context.res = {
-                status: 500,
-                body: { 
-                    success: false, 
-                    error: "Database connection failed",
-                    details: dbError.message
-                }
-            };
-            return;
-        }
-
-
-
 
 
          // Get configuration from Key Vault
@@ -680,6 +624,7 @@ module.exports = async function (context, req) {
         }
 
         // Connect to database
+        context.log('Connecting to database with Key Vault config...');
         await sql.connect(config);
 
         const request = new sql.Request();
