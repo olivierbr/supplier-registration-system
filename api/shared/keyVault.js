@@ -3,7 +3,7 @@ const { DefaultAzureCredential } = require("@azure/identity");
 
 class KeyVaultService {
     constructor() {
-        const vaultName = process.env.KEY_VAULT_NAME || "supplier-keyvault-ris]";
+        const vaultName = process.env.KEY_VAULT_NAME || "supplier-keyvault-ris";
         const vaultUrl = `https://${vaultName}.vault.azure.net/`;
         
         const credential = new DefaultAzureCredential();

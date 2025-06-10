@@ -27,7 +27,7 @@ async function getConfig() {
         
         return {
             user: process.env.SQL_USER,
-            password: secrets.sql-password,
+            password: secrets.sqlPassword,
             server: process.env.SQL_SERVER,
             database: process.env.SQL_DATABASE,
             options: {
@@ -36,7 +36,9 @@ async function getConfig() {
             }
         };
 
-console.Error('----------  PASSWORD : ', secrets.sql-password)
+console.error('----------  PASSWORD from Key Vault: ', secrets.sqlPassword)
+
+
 
     } catch (error) {
         console.error('Error getting configuration:', error);
