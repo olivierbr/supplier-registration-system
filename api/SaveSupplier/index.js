@@ -36,7 +36,7 @@ async function getConfig() {
             }
         };
 
-alert('Configuration loaded from Key Vault');
+console.Error('----------  PASSWORD : ', secrets.sql-password)
 
     } catch (error) {
         console.error('Error getting configuration:', error);
