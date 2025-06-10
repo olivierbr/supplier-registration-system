@@ -57,7 +57,7 @@ module.exports = async function (context, req) {
         let secretValue = null;
         try {
             if (secrets.length > 0) {
-                const firstSecret = await client.getSecret(secrets[2].name);
+                const firstSecret = await client.getSecret(secrets[0].name);
                 secretValue = `${firstSecret.value.substring(0, 5)}...`; // Show only first 5 chars for security
             }
         } catch (secretError) {
