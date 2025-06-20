@@ -30,6 +30,8 @@ header {
 header .logo {
     max-height: 80px;
     margin-bottom: 20px;
+    background-color: white;
+    padding: 10px;
 }
 
 header h1 {
