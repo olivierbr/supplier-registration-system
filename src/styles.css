@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #a9e5ff 100%);
     min-height: 100vh;
     padding: 20px;
 }
@@ -21,7 +21,7 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #61CEFF 0%, #00AAF6 100%);
     color: white;
     padding: 40px 30px;
     text-align: center;
@@ -30,7 +30,7 @@ header {
 header h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 header p {
@@ -66,7 +66,7 @@ header p {
 }
 
 .step.active:not(:last-child)::after {
-    background: #667eea;
+    background: #00AAF6;
 }
 
 .step-number {
@@ -74,7 +74,7 @@ header p {
     height: 40px;
     border-radius: 50%;
     background: #dee2e6;
-    color: #6c757d;
+    color: #00AAF6;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -85,18 +85,18 @@ header p {
 }
 
 .step.active .step-number {
-    background: #667eea;
+    background: #00AAF6;
     color: white;
 }
 
 .step-title {
     font-size: 0.9rem;
-    color: #6c757d;
+    color: #00AAF6;
     text-align: center;
 }
 
 .step.active .step-title {
-    color: #667eea;
+    color: #00AAF6;
     font-weight: 600;
 }
 
@@ -169,12 +169,12 @@ input:focus, select:focus, textarea:focus {
 }
 
 .btn-primary {
-    background: #667eea;
+    background: #00AAF6;
     color: white;
 }
 
 .btn-primary:hover {
-    background: #5a6fd8;
+    background: #a9e5ff;
     transform: translateY(-2px);
 }
 
