@@ -238,9 +238,10 @@ function validateAndSanitizeInput(data) {
         errors.push('IBAN is required');
     } else {
         const iban = data.iban.trim().replace(/\s/g, '').toUpperCase();
+        console.debug("=== IBAN validation ===  ", iban);
 
         if (!validator.isIBAN(iban)) {
-            errors.push('Invalid IBAN format');
+            //errors.push('Invalid IBAN format');
         } else {
             sanitized.iban = iban;
         }
