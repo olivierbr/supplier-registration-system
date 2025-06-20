@@ -227,11 +227,18 @@ function validateAndSanitizeInput(data) {
         }
     }
 
+    console.error('--------- IBAN obr ------------  ', data.iban);
+
+        console.log ('THIS IS SOME LOGGING');
+        console.info('HERE IS SOME INFO logging');
+
+
     // IBAN - required and must be valid
     if (!data.iban || !data.iban.trim()) {
         errors.push('IBAN is required');
     } else {
         const iban = data.iban.trim().replace(/\s/g, '').toUpperCase();
+
         if (!validator.isIBAN(iban)) {
             errors.push('Invalid IBAN format');
         } else {
