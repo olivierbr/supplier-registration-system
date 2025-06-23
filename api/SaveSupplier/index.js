@@ -227,18 +227,11 @@ function validateAndSanitizeInput(data) {
         }
     }
 
-    console.error('--------- IBAN obr ------------  ', data.iban);
-
-        console.log ('THIS IS SOME LOGGING');
-        console.info('HERE IS SOME INFO logging');
-
-
     // IBAN - required and must be valid
     if (!data.iban || !data.iban.trim()) {
         errors.push('IBAN is required');
     } else {
         const iban = data.iban.trim().replace(/\s/g, '').toUpperCase();
-        console.debug("=== IBAN validation ===  ", iban);
 
         if (!validator.isIBAN(iban)) {
             errors.push('Invalid IBAN format');
@@ -496,7 +489,7 @@ async function sendConfirmationEmail(supplierData, emailClient, context) {
                         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
                         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-                        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+                        .content { padding: 30px; border-radius: 0 0 8px 8px; }
                         .info-row { margin: 15px 0; }
                         .label { font-weight: bold; color: #667eea; }
                         .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
@@ -530,7 +523,6 @@ async function sendConfirmationEmail(supplierData, emailClient, context) {
                             <ul>
                                 <li>Our team will review your registration within 2-3 business days</li>
                                 <li>We may contact you for additional information or documentation</li>
-                                <li>Once approved, you will receive a welcome email with next steps</li>
                             </ul>
                             
                             <p>If you have any questions, please contact us at ${process.env.SUPPORT_EMAIL || 'support@company.com'}</p>
@@ -604,16 +596,16 @@ async function sendNotificationEmail(supplierData, emailClient, context) {
                     <style>
                         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                         .container { max-width: 700px; margin: 0 auto; padding: 20px; }
-                        .header { background: #667eea; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+                        .header { background: #00AAF6; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                        .content { padding: 30px; border-radius: 0 0 8px 8px; }
                         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-                        .info-item { background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #667eea; }
-                        .label { font-weight: bold; color: #667eea; display: block; margin-bottom: 5px; }
+                        .info-item { background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #00AAF6; }
+                        .label { font-weight: bold; color:rgb(2, 91, 133); display: block; margin-bottom: 5px; }
                         .value { color: #333; }
                         .action-buttons { text-align: center; margin: 30px 0; }
                         .btn { display: inline-block; padding: 12px 24px; margin: 0 10px; color: white; text-decoration: none; border-radius: 4px; }
                         .btn-approve { background: #28a745; }
-                        .btn-review { background: #667eea; }
+                        .btn-review { background: #00AAF6; }
                         @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
                     </style>
                 </head>
@@ -676,18 +668,12 @@ async function sendNotificationEmail(supplierData, emailClient, context) {
                                     <span class="value">${supplierData.bankName || 'Not provided'}</span>
                                 </div>
                             </div>
-                            
-                            <div class="action-buttons">
-                                <a href="${process.env.ADMIN_PORTAL_URL || '#'}" class="btn btn-review">Review in Admin Portal</a>
-                                <a href="mailto:${supplierData.email}" class="btn btn-approve">Contact Supplier</a>
-                            </div>
-                            
+                                                                                   
                             <p><strong>Next Steps:</strong></p>
                             <ul>
                                 <li>Review the supplier information</li>
                                 <li>Verify VAT number and banking details</li>
                                 <li>Request additional documentation if needed</li>
-                                <li>Approve or reject the registration</li>
                             </ul>
                         </div>
                     </div>
@@ -1013,6 +999,7 @@ module.exports = async function (context, req) {
             status: 200,
             body: { 
                 message: "Supplier registered successfully",
+                success: true,
                 data: {
                     companyName: sanitized.companyName,
                     email: sanitized.email

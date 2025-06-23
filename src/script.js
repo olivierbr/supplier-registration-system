@@ -158,7 +158,7 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
         }
         */
         
-        console.log('=== REGISTRATION SUCCESSFUL ===');
+        //console.log('=== REGISTRATION SUCCESSFUL ===');
         
         // Show success message
         const successHtml = `
