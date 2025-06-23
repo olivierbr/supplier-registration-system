@@ -86,7 +86,7 @@ async function validateVAT() {
 document.getElementById('supplierForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
- console.log('=== FORM SUBMISSION STARTED ===');
+ //console.log('=== FORM SUBMISSION STARTED ===');
 
     // Get form data
     // Collect all form data
@@ -110,8 +110,9 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
         bankName: document.getElementById('bankName').value.trim()
     };
     
- console.log('Form data collected:', formData);
-// Show loading state
+    // DEBUGGING
+    // console.log('Form data collected:', formData);
+    // Show loading state
     const submitButton = document.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Submitting...';
@@ -120,7 +121,7 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
 
 
     try {
-        console.log('Sending request to /api/SaveSupplier');
+        //console.log('Sending request to /api/SaveSupplier');
         const response = await fetch('/api/SaveSupplier', {
             method: 'POST',
             headers: {
@@ -130,12 +131,12 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
             body: JSON.stringify(formData)
         });
         
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
+        //console.log('Response status:', response.status);
+        //console.log('Response headers:', response.headers);
         
         // Get response text first
         const responseText = await response.text();
-        console.log('Raw response:', responseText);
+        //console.log('Raw response:', responseText);
         
         let responseData;
         try {
@@ -165,9 +166,7 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
             <div class="success-message">
                 <h2>Registration Successful!</h2>
                 <p>Thank you for registering as a supplier.</p>
-                <p><strong>Supplier ID:</strong> ${responseData.supplierId}</p>
-                <p><strong>Company:</strong> ${responseData.companyName}</p>
-                <p><strong>Status:</strong> ${responseData.status}</p>
+                <div style="height: 40px;"></div>
                 <p>You will receive an email confirmation shortly. Our team will review your application and contact you within 2-3 business days.</p>
             </div>
         `;
