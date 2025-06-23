@@ -613,8 +613,8 @@ async function sendNotificationEmail(supplierData, emailClient, context) {
                     <div class="container">
                         <div class="header">
                             <div style="margin-top: 30px; margin-bottom: 30px;">
-                                <h1>🏢 New Supplier Registration</h1>
-                                <p>A new supplier has registered on the portal</p>
+                                <h1 style="margin-top: 30px;>🏢 New Supplier Registration</h1>
+                                <p style="margin-bottom: 30px;>A new supplier has registered on the portal</p>
                             </div>
                         </div>
                         <div class="content">
