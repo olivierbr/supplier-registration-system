@@ -241,7 +241,7 @@ function validateAndSanitizeInput(data) {
         console.debug("=== IBAN validation ===  ", iban);
 
         if (!validator.isIBAN(iban)) {
-            //errors.push('Invalid IBAN format');
+            errors.push('Invalid IBAN format');
         } else {
             sanitized.iban = iban;
         }

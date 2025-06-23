@@ -140,7 +140,7 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
         let responseData;
         try {
             responseData = JSON.parse(responseText);
-            console.log('Parsed response:', responseData);
+            //console.log('Parsed response:', responseData);
         } catch (parseError) {
             console.error('Failed to parse JSON:', parseError);
             throw new Error(`Server returned invalid response: ${responseText}`);
@@ -151,10 +151,12 @@ document.getElementById('supplierForm').addEventListener('submit', async functio
             throw new Error(responseData.error || `HTTP ${response.status}: ${response.statusText}`);
         }
         
+        /*
         if (!responseData.success) {
             console.error('Business logic error:', responseData);
             throw new Error(responseData.error || 'Registration failed');
         }
+        */
         
         console.log('=== REGISTRATION SUCCESSFUL ===');
         
