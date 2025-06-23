@@ -612,8 +612,10 @@ async function sendNotificationEmail(supplierData, emailClient, context) {
                 <body>
                     <div class="container">
                         <div class="header">
-                            <h1>🏢 New Supplier Registration</h1>
-                            <p>A new supplier has registered on the portal</p>
+                            <div style="margin-top: 30px; margin-bottom: 30px;">
+                                <h1>🏢 New Supplier Registration</h1>
+                                <p>A new supplier has registered on the portal</p>
+                            </div>
                         </div>
                         <div class="content">
                             <p><strong>Registration Time:</strong> ${new Date().toLocaleString('en-BE', { timeZone: 'Europe/Brussels' })}</p>
